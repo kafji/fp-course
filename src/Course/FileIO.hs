@@ -90,7 +90,7 @@ printFile ::
   FilePath ->
   Chars ->
   IO ()
-printFile p c = const <$> putStrLn ("============ " ++ p) <*> putStrLn c
+printFile p c = putStrLn ("============ " ++ p) >> putStrLn c
 
 -- Given a list of (file name and file contents), print each.
 -- Use @printFile@.
@@ -118,7 +118,7 @@ getFiles = mapM' getFile
 run ::
   FilePath ->
   IO ()
-run path = readFile path >>= pure . lines >>= getFiles >>= printFiles
+run path = readFile path >>= getFiles . lines >>= printFiles
 
 -- /Tip:/ use @getArgs@ and @run@
 main ::

@@ -54,10 +54,7 @@ bindOptional _ Empty = Empty
 --
 -- >>> Empty ?? 99
 -- 99
-(??) ::
-  Optional a ->
-  a ->
-  a
+(??) :: Optional a -> a -> a
 (??) (Full x) _ = x
 (??) Empty x = x
 
@@ -89,11 +86,7 @@ bindOptional _ Empty = Empty
 --
 -- >>> optional (+1) 0 Empty
 -- 0
-optional ::
-  (a -> b) ->
-  b ->
-  Optional a ->
-  b
+optional :: (a -> b) -> b -> Optional a -> b
 optional f _ (Full x) = f x
 optional _ x Empty = x
 
@@ -104,8 +97,8 @@ twiceOptional :: (a -> b -> c) -> Optional a -> Optional b -> Optional c
 twiceOptional f = applyOptional . mapOptional f
 
 contains :: Eq a => a -> Optional a -> Bool
-contains _ Empty = False
-contains a (Full z) = a == z
+contains x (Full y) = x == y
+contains _ _ = False
 
 instance P.Functor Optional where
   fmap =
@@ -120,3 +113,6 @@ instance A.Applicative Optional where
 instance P.Monad Optional where
   (>>=) =
     flip bindOptional
+
+ifFull :: (a -> Bool) -> a -> Optional a
+ifFull p a = if p a then Full a else Empty

@@ -1,5 +1,8 @@
-{-# LANGUAGE NoImplicitPrelude #-}
 {-# LANGUAGE ScopedTypeVariables #-}
+{-# LANGUAGE NoImplicitPrelude #-}
+{-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
+
+{-# HLINT ignore "Use newtype instead of data" #-}
 
 module Course.ExactlyOne where
 
@@ -14,7 +17,7 @@ runExactlyOne :: ExactlyOne a -> a
 runExactlyOne (ExactlyOne a) = a
 
 mapExactlyOne :: (a -> b) -> ExactlyOne a -> ExactlyOne b
-mapExactlyOne f (ExactlyOne a)    = ExactlyOne (f a)
+mapExactlyOne f (ExactlyOne a) = ExactlyOne (f a)
 
 bindExactlyOne :: (a -> ExactlyOne b) -> ExactlyOne a -> ExactlyOne b
 bindExactlyOne f (ExactlyOne a) = f a
@@ -32,4 +35,3 @@ instance A.Applicative ExactlyOne where
 instance P.Monad ExactlyOne where
   (>>=) =
     flip bindExactlyOne
-

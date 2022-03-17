@@ -20,10 +20,7 @@ import qualified Prelude as P (fmap)
 --   `∀f g x.(f . g <$> x) ≅ (f <$> (g <$> x))`
 class Functor k where
   -- Pronounced, eff-map.
-  (<$>) ::
-    (a -> b) ->
-    k a ->
-    k b
+  (<$>) :: (a -> b) -> k a -> k b
 
 infixl 4 <$>
 

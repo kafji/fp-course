@@ -27,14 +27,10 @@ import qualified Prelude as P (fmap, pure, (>>=))
 -- * The law of interchange
 --   `∀u y. u <*> pure y = pure ($ y) <*> u`
 class Functor k => Applicative k where
-  pure ::
-    a -> k a
+  pure :: a -> k a
 
   -- Pronounced, apply.
-  (<*>) ::
-    k (a -> b) ->
-    k a ->
-    k b
+  (<*>) :: k (a -> b) -> k a -> k b
 
 infixl 4 <*>
 
@@ -85,14 +81,10 @@ instance Applicative List where
 -- >>> Full (+8) <*> Empty
 -- Empty
 instance Applicative Optional where
-  pure ::
-    a ->
-    Optional a
+  pure :: a -> Optional a
   pure = Full
-  (<*>) ::
-    Optional (a -> b) ->
-    Optional a ->
-    Optional b
+
+  (<*>) :: Optional (a -> b) -> Optional a -> Optional b
   (<*>) f a = bindOptional (`mapOptional` a) f
 
 -- | Insert into a constant function.
@@ -114,9 +106,7 @@ instance Applicative Optional where
 --
 -- prop> \x y -> pure x y == x
 instance Applicative ((->) t) where
-  pure ::
-    a ->
-    (->) t a
+  pure :: a -> t -> a
   pure = const
   (<*>) ::
     (->) t (a -> b) ->
@@ -143,12 +133,7 @@ instance Applicative ((->) t) where
 --
 -- >>> lift2 (+) length sum (listh [4,5,6])
 -- 18
-lift2 ::
-  Applicative k =>
-  (a -> b -> c) ->
-  k a ->
-  k b ->
-  k c
+lift2 :: Applicative k => (a -> b -> c) -> k a -> k b -> k c
 lift2 f a = (pure f <*> a <*>)
 
 -- | Apply a ternary function in the environment.
@@ -357,16 +342,12 @@ replicateA n a = sequence (replicate n a)
 --
 -- >>> filtering (const $ True :. True :.  Nil) (1 :. 2 :. 3 :. Nil)
 -- [[1,2,3],[1,2,3],[1,2,3],[1,2,3],[1,2,3],[1,2,3],[1,2,3],[1,2,3]]
-filtering ::
-  Applicative k =>
-  (a -> k Bool) ->
-  List a ->
-  k (List a)
-filtering f = foldRight (\a k -> lift2 (append a) (pred a) k) (pure Nil)
+filtering :: Applicative k => (a -> k Bool) -> List a -> k (List a)
+filtering f = foldRight f' (pure Nil)
   where
-    pred a = f a
     append :: a -> Bool -> List a -> List a
     append a b li = if b then a :. li else li
+    f' a k = lift2 (append a) (f a) k
 
 -----------------------
 -- SUPPORT LIBRARIES --

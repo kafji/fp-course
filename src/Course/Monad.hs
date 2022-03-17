@@ -20,10 +20,7 @@ import qualified Prelude as P ((=<<))
 --   `∀f g x. g =<< (f =<< x) ≅ ((g =<<) . f) =<< x`
 class Applicative k => Monad k where
   -- Pronounced, bind.
-  (=<<) ::
-    (a -> k b) ->
-    k a ->
-    k b
+  (=<<) :: (a -> k b) -> k a -> k b
 
 infixr 1 =<<
 
@@ -65,10 +62,7 @@ instance Monad Optional where
 -- >>> ((*) =<< (+10)) 7
 -- 119
 instance Monad ((->) t) where
-  (=<<) ::
-    (a -> (t -> b)) ->
-    (t -> a) ->
-    (t -> b)
+  (=<<) :: (a -> (t -> b)) -> (t -> a) -> (t -> b)
   (=<<) f a = \t -> f (a t) t
 
 -- | Witness that all things with (=<<) and (<$>) also have (<*>).
