@@ -220,7 +220,7 @@ instance Monad k => Applicative (OptionalT k) where
   pure x = OptionalT (pure (pure x))
 
   (<*>) :: OptionalT k (a -> b) -> OptionalT k a -> OptionalT k b
-  (<*>) x y = OptionalT (lift2 (<*>) (runOptionalT x) (runOptionalT y))
+  (<*>) x y = OptionalT (runOptionalT x >>= onFull (\f -> runOptionalT y >>= (\b -> pure (f <$> b))))
 
 -- | Implement the `Monad` instance for `OptionalT k` given a Monad k.
 --
@@ -228,8 +228,7 @@ instance Monad k => Applicative (OptionalT k) where
 -- [Full 2,Full 3,Empty]
 instance Monad k => Monad (OptionalT k) where
   (=<<) :: (a -> OptionalT k b) -> OptionalT k a -> OptionalT k b
-  (=<<) =
-    error "todo: Course.StateT (=<<)#instance (OptionalT k)"
+  (=<<) f a = OptionalT (runOptionalT a >>= onFull (runOptionalT . f))
 
 -- | A `Logger` is a pair of a list of log values (`[l]`) and an arbitrary value (`a`).
 data Logger l a
